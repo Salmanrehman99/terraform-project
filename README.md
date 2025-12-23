@@ -78,14 +78,14 @@ Ensure the following are installed:
 git clone https://github.com/Salmanrehman99/terraform-project.git
 cd terraform-project
 
-🔹 Configure PostgreSQL
+### 🔹 Configure PostgreSQL
 
-Before creating the database user, replace <your_password> with a strong password.
+Before creating the database user, replace `<your_password>` with a strong password.
 
+```bash
 psql -U postgres -c "CREATE DATABASE grocerymate_db;"
 psql -U postgres -c "CREATE USER grocery_user WITH ENCRYPTED PASSWORD '<your_password>';"
 psql -U postgres -c "ALTER USER grocery_user WITH SUPERUSER;"
-
 🔹 Populate Database
 psql -U grocery_user -d grocerymate_db -f backend/app/sqlite_dump_clean.sql
 
@@ -94,78 +94,3 @@ Verify insertion:
 
 psql -U grocery_user -d grocerymate_db -c "SELECT * FROM users;"
 psql -U grocery_user -d grocerymate_db -c "SELECT * FROM products;"
-
-🔹 Set Up Python Environment
-cd backend
-pip install -r requirements.txt
-
-
-If pip is not available:
-
-pip3 install -r requirements.txt
-
-🔹 Set Environment Variables
-
-Create a .env file:
-
-touch .env  # macOS/Linux
-ni .env -Force  # Windows PowerShell
-
-
-Generate a secure JWT key:
-
-python3 -c "import secrets; print(secrets.token_hex(32))"
-
-
-Update .env:
-
-JWT_SECRET_KEY=<your_generated_key>
-POSTGRES_USER=grocery_user
-POSTGRES_PASSWORD=<your_password>
-POSTGRES_DB=grocerymate_db
-POSTGRES_HOST=localhost
-POSTGRES_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
-
-🔹 Start the Application
-python3 run.py
-
-
-Access locally at: http://localhost:5000
-
-📖 Usage
-
-Register/Login to your account
-
-Browse and search for products
-
-Manage favorites and shopping basket
-
-Proceed through the checkout process
-
-☁️ AWS & Terraform Setup
-
-This project includes Terraform-managed infrastructure for AWS:
-
-Provision EC2 instances for backend
-
-Manage PostgreSQL and storage resources
-
-Implement cost-efficient and scalable architecture
-
-Infrastructure can be recreated easily using Infrastructure as Code
-
-🚀 Future Improvements
-
-Add CI/CD pipeline (GitHub Actions)
-
-Containerize the application using Docker
-
-Implement CloudWatch monitoring
-
-Improve IAM security policies
-
-Add caching layer (Redis / ElastiCache)
-
-📜 License
-
-This project is licensed under the MIT License.
