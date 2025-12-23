@@ -74,25 +74,104 @@ Ensure the following are installed:
 
 ### 🔹 Clone Repository
 
-```bash
-git clone https://github.com/Salmanrehman99/terraform-project.git
-cd terraform-project
+```sh
+git clone --branch version2 https://github.com/AlejandroRomanIbanez/AWS_grocery.git && cd AWS_grocery
+```
 
 ### 🔹 Configure PostgreSQL
 
-Before creating the database user, replace `<your_password>` with a strong password.
+Before creating the database user, you can choose a custom username and password to enhance security. Replace `<your_secure_password>` with a strong password of your choice in the following commands.
 
-```bash
+Create database and user:
+
+```sh
 psql -U postgres -c "CREATE DATABASE grocerymate_db;"
-psql -U postgres -c "CREATE USER grocery_user WITH ENCRYPTED PASSWORD '<your_password>';"
+psql -U postgres -c "CREATE USER grocery_user WITH ENCRYPTED PASSWORD '<your_secure_password>';"  # Replace <your_secure_password> with a strong password of your choice
 psql -U postgres -c "ALTER USER grocery_user WITH SUPERUSER;"
+```
 
 ### 🔹 Populate Database
 
+```sh
 psql -U grocery_user -d grocerymate_db -f backend/app/sqlite_dump_clean.sql
-
+```
 
 Verify insertion:
 
+```sh
 psql -U grocery_user -d grocerymate_db -c "SELECT * FROM users;"
 psql -U grocery_user -d grocerymate_db -c "SELECT * FROM products;"
+```
+
+### 🔹 Set Up Python Environment
+
+
+Install dependencies in an activated virtual Enviroment:
+
+```sh
+cd backend
+pip install -r requirements.txt
+```
+OR (if pip doesn't exist)
+```sh
+pip3 install -r requirements.txt
+```
+
+### 🔹 Set Environment Variables
+
+Create a `.env` file:
+
+```sh
+touch .env  # macOS/Linux
+ni .env -Force  # Windows
+```
+
+Generate a secure JWT key:
+
+```sh
+python3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+Update `.env`:
+
+```sh
+nano .env
+```
+
+Fill in the following information (make sure to replace the placeholders):
+
+```ini
+JWT_SECRET_KEY=<your_generated_key>
+POSTGRES_USER=grocery_user
+POSTGRES_PASSWORD=<your_password>
+POSTGRES_DB=grocerymate_db
+POSTGRES_HOST=localhost
+POSTGRES_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
+```
+
+### 🔹 Start the Application
+
+```sh
+python3 run.py
+```
+
+## 📖 Usage
+
+- Access the application at [http://localhost:5000](http://localhost:5000)
+- Register/Login to your account
+- Browse and search for products
+- Manage favorites and shopping basket
+- Proceed through the checkout process
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. Fork the repository.
+2. Create a new feature branch (`feature/your-feature`).
+3. Implement your changes and commit them.
+4. Push your branch and create a pull request.
+
+## 📜 License
+
+This project is licensed under the MIT License.
