@@ -86,7 +86,9 @@ Before creating the database user, replace `<your_password>` with a strong passw
 psql -U postgres -c "CREATE DATABASE grocerymate_db;"
 psql -U postgres -c "CREATE USER grocery_user WITH ENCRYPTED PASSWORD '<your_password>';"
 psql -U postgres -c "ALTER USER grocery_user WITH SUPERUSER;"
-🔹 Populate Database
+
+### 🔹 Populate Database
+
 psql -U grocery_user -d grocerymate_db -f backend/app/sqlite_dump_clean.sql
 
 
