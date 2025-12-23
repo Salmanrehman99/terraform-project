@@ -1,3 +1,4 @@
+
 # GroceryMate Cloud Platform
 
 ## 🏆 GroceryMate – Cloud-Based E-Commerce Application
@@ -162,6 +163,30 @@ python3 run.py
 - Browse and search for products
 - Manage favorites and shopping basket
 - Proceed through the checkout process
+
+## 📖 AWS & Terraform Setup
+
+This project includes Terraform-managed infrastructure for AWS:
+
+Provision EC2 instances for backend
+
+Manage PostgreSQL and storage resources
+
+Implement cost-efficient and scalable architecture
+
+Infrastructure can be recreated easily using Infrastructure as Code
+
+## 📖  Future Improvements
+
+Add CI/CD pipeline (GitHub Actions)
+
+Containerize the application using Docker
+
+Implement CloudWatch monitoring
+
+Improve IAM security policies
+
+Add caching layer (Redis / ElastiCache)
 
 ## 🤝 Contributing
 
