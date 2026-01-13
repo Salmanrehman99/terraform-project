@@ -12,7 +12,7 @@ terraform {
 
 provider "aws" {
   region  = "us-east-1"
-  profile = "default" # This forces it to use your working CLI profile
+  profile = "default" 
 }
 # -----------------------
 # Fetch Latest Amazon Linux 2 AMI
@@ -66,7 +66,7 @@ resource "aws_subnet" "main_subnet" {
   vpc_id                  = aws_vpc.main_vpc.id
   cidr_block              = "10.0.1.0/24"
   map_public_ip_on_launch = true
-  availability_zone       = "us-east-1a" # Corrected AZ name
+  availability_zone       = "us-east-1a" 
 
   tags = {
     Name = "main-subnet"
