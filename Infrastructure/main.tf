@@ -12,8 +12,9 @@ terraform {
 
 provider "aws" {
   region  = "us-east-1"
-  profile = "default" 
+  profile = "default"
 }
+
 # -----------------------
 # Fetch Latest Amazon Linux 2 AMI
 # -----------------------
@@ -28,7 +29,7 @@ data "aws_ami" "amazon_linux" {
 }
 
 # -----------------------
-# VPC & Networking
+# VPC
 # -----------------------
 resource "aws_vpc" "main_vpc" {
   cidr_block = "10.0.0.0/16"
@@ -38,6 +39,9 @@ resource "aws_vpc" "main_vpc" {
   }
 }
 
+# -----------------------
+# Internet Gateway (Public Only)
+# -----------------------
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main_vpc.id
 
@@ -46,6 +50,9 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
+# -----------------------
+# Route Tables
+# -----------------------
 resource "aws_route_table" "public_rt" {
   vpc_id = aws_vpc.main_vpc.id
 
@@ -55,47 +62,78 @@ resource "aws_route_table" "public_rt" {
   }
 
   tags = {
-    Name = "public-route-table"
+    Name = "public-rt"
+  }
+}
+
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.main_vpc.id
+
+  tags = {
+    Name = "private-rt"
   }
 }
 
 # -----------------------
-# Subnets
+# Public Subnet (EC2)
 # -----------------------
-resource "aws_subnet" "main_subnet" {
+resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.main_vpc.id
   cidr_block              = "10.0.1.0/24"
+  availability_zone       = "us-east-1a"
   map_public_ip_on_launch = true
-  availability_zone       = "us-east-1a" 
 
   tags = {
-    Name = "main-subnet"
+    Name = "public-subnet"
   }
 }
 
-resource "aws_subnet" "secondary_subnet" {
+resource "aws_route_table_association" "public_assoc" {
+  subnet_id      = aws_subnet.public_subnet.id
+  route_table_id = aws_route_table.public_rt.id
+}
+
+# -----------------------
+# Private Subnets (RDS)
+# -----------------------
+resource "aws_subnet" "private_subnet_1" {
   vpc_id                  = aws_vpc.main_vpc.id
   cidr_block              = "10.0.2.0/24"
-  map_public_ip_on_launch = true
-  availability_zone       = "us-east-1b"
+  availability_zone       = "us-east-1a"
+  map_public_ip_on_launch = false
 
   tags = {
-    Name = "secondary-subnet"
+    Name = "private-subnet-1"
   }
 }
 
-resource "aws_route_table_association" "a" {
-  subnet_id      = aws_subnet.main_subnet.id
-  route_table_id = aws_route_table.public_rt.id
+resource "aws_subnet" "private_subnet_2" {
+  vpc_id                  = aws_vpc.main_vpc.id
+  cidr_block              = "10.0.3.0/24"
+  availability_zone       = "us-east-1b"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = "private-subnet-2"
+  }
+}
+
+resource "aws_route_table_association" "private_assoc_1" {
+  subnet_id      = aws_subnet.private_subnet_1.id
+  route_table_id = aws_route_table.private_rt.id
+}
+
+resource "aws_route_table_association" "private_assoc_2" {
+  subnet_id      = aws_subnet.private_subnet_2.id
+  route_table_id = aws_route_table.private_rt.id
 }
 
 # -----------------------
 # Security Groups
 # -----------------------
 resource "aws_security_group" "web_sg" {
-  name        = "web-security-group"
-  description = "Allow HTTP and SSH"
-  vpc_id      = aws_vpc.main_vpc.id
+  name   = "web-sg"
+  vpc_id = aws_vpc.main_vpc.id
 
   ingress {
     from_port   = 80
@@ -120,9 +158,8 @@ resource "aws_security_group" "web_sg" {
 }
 
 resource "aws_security_group" "rds_sg" {
-  name        = "rds-security-group"
-  description = "Allow Postgres from EC2 only"
-  vpc_id      = aws_vpc.main_vpc.id
+  name   = "rds-sg"
+  vpc_id = aws_vpc.main_vpc.id
 
   ingress {
     from_port       = 5432
@@ -140,12 +177,12 @@ resource "aws_security_group" "rds_sg" {
 }
 
 # -----------------------
-# EC2 Instance
+# EC2 Instance (Public)
 # -----------------------
 resource "aws_instance" "web_server" {
   ami                    = data.aws_ami.amazon_linux.id
   instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.main_subnet.id
+  subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.web_sg.id]
 
   tags = {
@@ -154,16 +191,20 @@ resource "aws_instance" "web_server" {
 }
 
 # -----------------------
-# RDS Database
+# RDS Subnet Group (PRIVATE)
 # -----------------------
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  name       = "rds-subnet-group"
+  name = "rds-private-subnet-group"
+
   subnet_ids = [
-    aws_subnet.main_subnet.id,
-    aws_subnet.secondary_subnet.id
+    aws_subnet.private_subnet_1.id,
+    aws_subnet.private_subnet_2.id
   ]
 }
 
+# -----------------------
+# RDS PostgreSQL (PRIVATE + NO HARDCODED PASSWORD)
+# -----------------------
 resource "aws_db_instance" "postgres" {
   identifier             = "grocerymate-db"
   allocated_storage      = 20
@@ -171,10 +212,9 @@ resource "aws_db_instance" "postgres" {
   instance_class         = "db.t3.micro"
   db_name                = "grocerydb"
   username               = "groceryuser"
-  password               = "singapore" # Corrected: Added quotes
-  skip_final_snapshot    = true
+  password               = var.db_password
   publicly_accessible    = false
+  skip_final_snapshot    = true
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
 }
-
