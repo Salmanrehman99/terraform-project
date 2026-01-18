@@ -7,12 +7,3 @@ infrastructure/.terraform.lock.hcl
 infrastructure/terraform.tfstate
 infrastructure/terraform.tfstate.backup
 venv/
-{
-  "version": 4,
-  "terraform_version": "1.14.2",
-  "serial": 24,
-  "lineage": "521263b2-e428-7a24-61e7-89f247c0ad8b",
-  "outputs": {},
-  "resources": [],
-  "check_results": null
-}
