@@ -1,16 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = ">= 5.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = "us-east-1"
-}
-
 ########################
 # S3 Bucket
 ########################
@@ -89,3 +76,10 @@ resource "aws_iam_role_policy_attachment" "avatars_attach" {
   policy_arn = aws_iam_policy.avatars_s3_policy.arn
 }
 
+########################
+# IAM Instance Profile (for EC2)
+########################
+resource "aws_iam_instance_profile" "avatars_profile" {
+  name = "grocerymate-avatars-profile"
+  role = aws_iam_role.avatars_role.name
+}
