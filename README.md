@@ -27,7 +27,7 @@
   - [Start the Application](#-start-the-application)
 - [Usage](#-usage)
 - [AWS & Terraform Setup](#-aws--terraform-setup)
-- [How to Build & Run This Application](#-Building-running-app)
+- [How to Build & Run This Application](#-how-to-build--run-this-application)
 - [AWS Resources Used & Design Rationale](#-aws-resources-used--design-rationale)
 - [Future Improvements](#-future-improvements)
 - [License](#-license)
