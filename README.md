@@ -28,6 +28,7 @@
 - [Usage](#-usage)
 - [AWS & Terraform Setup](#-aws--terraform-setup)
 - [How to Build & Run This Application](#-Building-running-app)
+- [AWS Resources Used & Design Rationale](#-Resources-used)
 - [Future Improvements](#-future-improvements)
 - [License](#-license)
 
@@ -252,6 +253,124 @@ Networking resources (VPC-related components)
 The following diagram illustrates the high-level architecture of the GroceryMate cloud platform deployed on AWS.
 
 ![GroceryMate Architecture](Docs/architecture.png)
+
+## 📖 AWS Resources Used & Design Rationale
+
+This project uses several AWS services to build a scalable, secure, and production-like cloud architecture. Each service was chosen intentionally based on its strengths and real-world applicability.
+
+🖥 Amazon EC2 – Backend Compute
+
+Purpose:
+Hosts the Python (Flask) backend API.
+
+Why EC2?
+
+Full control over the runtime environment
+
+Cost-effective for small and medium workloads
+
+Ideal for learning infrastructure fundamentals
+
+Easily scalable to Auto Scaling Groups in the future
+
+🐘 Amazon RDS (PostgreSQL) – Relational Database
+
+Purpose:
+Stores application data such as users, products, orders, and favorites.
+
+Why RDS PostgreSQL?
+
+Managed database service (automatic backups & patching)
+
+Strong ACID compliance
+
+Production-ready and widely adopted
+
+Eliminates the need to manage database servers manually
+
+Engine Used:
+
+PostgreSQL 14+
+
+🪣 Amazon S3 – Object Storage
+
+Purpose:
+Stores user-uploaded assets such as profile avatars.
+
+Why S3?
+
+Highly durable and scalable object storage
+
+Cost-efficient for static files
+
+Integrates securely with IAM roles
+
+Supports versioning for data protection
+
+Features Enabled:
+
+Bucket versioning
+
+IAM-scoped access policies
+
+🔐 AWS IAM – Identity & Access Management
+
+Purpose:
+Manages secure access between AWS services.
+
+Why IAM?
+
+Enforces least-privilege access
+
+Allows EC2 or Lambda to access S3 without hard-coded credentials
+
+Improves security and follows AWS best practices
+
+🌐 Amazon VPC – Networking
+
+Purpose:
+Provides isolated networking for AWS resources.
+
+Why VPC?
+
+Network isolation for security
+
+Control over IP addressing and subnets
+
+Foundation for scalable cloud architectures
+
+Enables future expansion (load balancers, private subnets)
+
+🧱 Terraform – Infrastructure as Code
+
+Purpose:
+Provisions and manages AWS resources.
+
+Why Terraform?
+
+Declarative and version-controlled infrastructure
+
+Easy environment recreation
+
+Prevents configuration drift
+
+Industry-standard IaC tool
+
+✅ Architecture Design Benefits
+
+🔒 Secure – IAM-based access, isolated networking
+
+📈 Scalable – Can evolve to Auto Scaling & Load Balancers
+
+💰 Cost-Aware – Uses lightweight resources for development
+
+🔁 Repeatable – Entire infrastructure can be recreated with Terraform
+
+📌 Summary
+
+The AWS services selected for this project closely mirror real production environments, making GroceryMate an excellent demonstration of cloud engineering best practices using AWS and Terraform.
+This architecture was designed to balance simplicity, scalability, and real-world cloud practices while remaining cost-efficient for development environments.
+
 
 
 
