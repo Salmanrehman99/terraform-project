@@ -27,6 +27,7 @@
   - [Start the Application](#-start-the-application)
 - [Usage](#-usage)
 - [AWS & Terraform Setup](#-aws--terraform-setup)
+- [How to Build & Run This Application]
 - [Future Improvements](#-future-improvements)
 - [License](#-license)
 
@@ -175,6 +176,78 @@ Manage PostgreSQL and storage resources
 Implement cost-efficient and scalable architecture
 
 Infrastructure can be recreated easily using Infrastructure as Code
+
+## 📖 How to Build & Run This Application
+This section explains exactly how to build, configure, and run the GroceryMate application, including required versions, environment variables, infrastructure commands, and architecture.
+
+| Component              | Technology | Version / Engine                |
+| ---------------------- | ---------- | ------------------------------- |
+| Backend                | Python     | **3.11+**                       |
+| Web Framework          | Flask      | Latest (via `requirements.txt`) |
+| Database               | PostgreSQL | **14+** (Engine: `postgres`)    |
+| Frontend               | JavaScript | React-based                     |
+| Cloud Provider         | AWS        | us-east-1                       |
+| Infrastructure as Code | Terraform  | **≥ 1.5**                       |
+| Storage                | Amazon S3  | Standard + Versioning           |
+| Authentication         | JWT        | HS256                           |
+
+The application relies on environment variables stored in a .env file inside the backend/ directory.
+### 🔹Required Environment Variables:
+# Application
+FLASK_ENV=development
+ENVIRONMENT=dev
+JWT_SECRET_KEY=your_generated_secret
+
+# AWS
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+
+# S3 (User Avatars)
+S3_BUCKET_NAME= your-bucket- name
+S3_BUCKET_REGION= selected-bucket-region
+S3_AVATAR_PREFIX=avatars/
+
+# Database
+POSTGRES_USER=grocery_user
+POSTGRES_PASSWORD=your_password
+POSTGRES_DB=grocerymate_db
+POSTGRES_HOST=localhost
+POSTGRES_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
+
+🐳 Docker (Planned)
+
+Docker support is planned to simplify local development and deployment.
+
+Future Docker usage will include:
+
+Containerized Flask backend
+
+PostgreSQL service via Docker Compose
+
+Consistent development environments
+
+🏗 Terraform Infrastructure Commands
+
+All AWS infrastructure is managed using Terraform.
+Initialize Terraform
+terraform init
+Preview Changes
+terraform plan
+Apply Infrastructure
+terraform apply
+
+Terraform provisions:
+
+Amazon S3 bucket (avatars + versioning)
+
+IAM roles & policies
+
+PostgreSQL RDS
+
+Networking resources (VPC-related components)
+
+
 
 ## 📖  Future Improvements
 
