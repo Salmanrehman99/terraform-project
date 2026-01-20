@@ -27,7 +27,7 @@
   - [Start the Application](#-start-the-application)
 - [Usage](#-usage)
 - [AWS & Terraform Setup](#-aws--terraform-setup)
-- [How to Build & Run This Application]
+- [How to Build & Run This Application](#-Building-running-app)
 - [Future Improvements](#-future-improvements)
 - [License](#-license)
 
@@ -246,6 +246,13 @@ IAM roles & policies
 PostgreSQL RDS
 
 Networking resources (VPC-related components)
+
+## 🏗 Architecture Diagram
+
+The following diagram illustrates the high-level architecture of the GroceryMate cloud platform deployed on AWS.
+
+![GroceryMate Architecture](Docs/architecture.png)
+
 
 
 
