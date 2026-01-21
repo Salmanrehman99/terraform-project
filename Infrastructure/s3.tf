@@ -1,7 +1,7 @@
 ########################
 # S3 Bucket
 ########################
-resource "aws_s3_bucket" "avatars" {
+resource "aws_s3_bucket" "avatars_bucket" {
   bucket = "grocerymate-avatars-unique-16623"
 
   tags = {
@@ -13,8 +13,8 @@ resource "aws_s3_bucket" "avatars" {
 ########################
 # Enable Versioning
 ########################
-resource "aws_s3_bucket_versioning" "avatars_versioning" {
-  bucket = aws_s3_bucket.avatars.id
+resource "aws_s3_bucket_versioning" "avatars_bucket_versioning" {
+  bucket = aws_s3_bucket.avatars_bucket.id
 
   versioning_configuration {
     status = "Enabled"
@@ -33,12 +33,10 @@ resource "aws_iam_policy" "avatars_s3_policy" {
     Statement = [
       {
         Effect = "Allow"
-        Action = [
-          "s3:*"
-        ]
+        Action = ["s3:*"]
         Resource = [
-          aws_s3_bucket.avatars.arn,
-          "${aws_s3_bucket.avatars.arn}/*"
+          aws_s3_bucket.avatars_bucket.arn,
+          "${aws_s3_bucket.avatars_bucket.arn}/*"
         ]
       }
     ]
@@ -46,7 +44,7 @@ resource "aws_iam_policy" "avatars_s3_policy" {
 }
 
 ########################
-# IAM Role (for EC2 / Lambda)
+# IAM Role (for EC2 + SSM)
 ########################
 resource "aws_iam_role" "avatars_role" {
   name = "grocerymate-avatars-role"
@@ -59,7 +57,7 @@ resource "aws_iam_role" "avatars_role" {
         Principal = {
           Service = [
             "ec2.amazonaws.com",
-            "lambda.amazonaws.com"
+            "ssm.amazonaws.com"
           ]
         }
         Action = "sts:AssumeRole"
