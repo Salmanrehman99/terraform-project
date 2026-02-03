@@ -10,11 +10,104 @@ terraform {
   }
 }
 
-provider "aws" {
-  region  = "us-east-1"
-
+# -----------------------
+# AWS Provider (Dynamic Region & Profile)
+# -----------------------
+variable "aws_region" {
+  description = "AWS region to deploy resources"
+  type        = string
 }
 
+variable "aws_profile" {
+  description = "AWS CLI profile to use"
+  type        = string
+  default     = "default"
+}
+
+provider "aws" {
+  region  = var.aws_region
+  profile = var.aws_profile
+}
+
+# -----------------------
+# Input Variables
+# -----------------------
+variable "db_identifier" {
+  description = "RDS instance identifier"
+  type        = string
+}
+
+variable "db_name" {
+  description = "PostgreSQL database name"
+  type        = string
+}
+
+variable "db_username" {
+  description = "PostgreSQL master username"
+  type        = string
+}
+
+variable "db_password" {
+  description = "PostgreSQL master password"
+  type        = string
+  sensitive   = true
+}
+
+variable "bucket_name" {
+  description = "Name of your S3 bucket"
+  type        = string
+}
+
+variable "key_pair_name" {
+  description = "Name of the AWS EC2 Key Pair"
+  type        = string
+}
+
+variable "public_key_path" {
+  description = "Path to your EC2 public key file"
+  type        = string
+}
+
+variable "ssh_allowed_cidr" {
+  description = "List of CIDR blocks allowed to SSH into EC2"
+  type        = list(string)
+}
+
+variable "ec2_name" {
+  description = "Name tag for the EC2 instance"
+  type        = string
+  default     = "web-server"
+}
+
+# -----------------------
+# VPC & Subnet Variables
+# -----------------------
+variable "vpc_cidr" {
+  description = "CIDR block for VPC"
+  type        = string
+}
+
+variable "public_subnet_cidr" {
+  description = "CIDR block for public subnet"
+  type        = string
+}
+
+variable "private_subnet_1_cidr" {
+  description = "CIDR block for private subnet 1"
+  type        = string
+}
+
+variable "private_subnet_2_cidr" {
+  description = "CIDR block for private subnet 2"
+  type        = string
+}
+
+# -----------------------
+# Fetch Availability Zones dynamically
+# -----------------------
+data "aws_availability_zones" "available" {
+  state = "available"
+}
 
 # -----------------------
 # Fetch Latest Amazon Linux 2 AMI
@@ -30,28 +123,21 @@ data "aws_ami" "amazon_linux" {
 }
 
 # -----------------------
-# VPC
+# VPC & Networking
 # -----------------------
 resource "aws_vpc" "main_vpc" {
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
 
-  tags = { Name = "main-vpc" }
+  tags = { Name = "vpc" }
 }
 
-# -----------------------
-# Internet Gateway (Public Only)
-# -----------------------
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main_vpc.id
-
-  tags = { Name = "main-igw" }
+  tags   = { Name = "igw" }
 }
 
-# -----------------------
-# Route Tables
-# -----------------------
 resource "aws_route_table" "public_rt" {
   vpc_id = aws_vpc.main_vpc.id
 
@@ -69,12 +155,12 @@ resource "aws_route_table" "private_rt" {
 }
 
 # -----------------------
-# Public Subnet (EC2)
+# Public Subnet
 # -----------------------
 resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.main_vpc.id
-  cidr_block              = "10.0.1.0/24"
-  availability_zone       = "us-east-1a"
+  cidr_block              = var.public_subnet_cidr
+  availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = true
 
   tags = { Name = "public-subnet" }
@@ -86,20 +172,20 @@ resource "aws_route_table_association" "public_assoc" {
 }
 
 # -----------------------
-# Private Subnets (RDS)
+# Private Subnets
 # -----------------------
 resource "aws_subnet" "private_subnet_1" {
   vpc_id            = aws_vpc.main_vpc.id
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = "us-east-1a"
+  cidr_block        = var.private_subnet_1_cidr
+  availability_zone = data.aws_availability_zones.available.names[0]
 
   tags = { Name = "private-subnet-1" }
 }
 
 resource "aws_subnet" "private_subnet_2" {
   vpc_id            = aws_vpc.main_vpc.id
-  cidr_block        = "10.0.3.0/24"
-  availability_zone = "us-east-1b"
+  cidr_block        = var.private_subnet_2_cidr
+  availability_zone = data.aws_availability_zones.available.names[1]
 
   tags = { Name = "private-subnet-2" }
 }
@@ -115,18 +201,30 @@ resource "aws_route_table_association" "private_assoc_2" {
 }
 
 # -----------------------
+# Dynamic IP Discovery
+# -----------------------
+
+data "http" "my_ip" {
+  url = "https://checkip.amazonaws.com"
+}
+
+# -----------------------
 # Security Groups
 # -----------------------
 resource "aws_security_group" "web_sg" {
   name   = "web-sg"
   vpc_id = aws_vpc.main_vpc.id
 
+  # SSH Access: Restricted ONLY to your current IP
   ingress {
+    description = "SSH from my current IP"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+
+    cidr_blocks = ["${chomp(data.http.my_ip.response_body)}/32"]
   }
+
 
   ingress {
     from_port   = 80
@@ -149,6 +247,7 @@ resource "aws_security_group" "rds_sg" {
   name   = "rds-sg"
   vpc_id = aws_vpc.main_vpc.id
 
+
   ingress {
     from_port       = 5432
     to_port         = 5432
@@ -169,7 +268,7 @@ resource "aws_security_group" "rds_sg" {
 # -----------------------
 # EC2 Key Pair
 # -----------------------
-resource "aws_key_pair" "grocerymate_key" {
+resource "aws_key_pair" "ec2_key" {
   key_name   = var.key_pair_name
   public_key = file(var.public_key_path)
 }
@@ -178,36 +277,32 @@ resource "aws_key_pair" "grocerymate_key" {
 # IAM Role & Policy for EC2 to Access S3
 # -----------------------
 resource "aws_iam_role" "ec2_s3_role" {
-  name = "ec2-full-s3-role"
+  name = "ec2-s3-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
       Action    = "sts:AssumeRole"
       Effect    = "Allow"
-      Principal = {
-        Service = "ec2.amazonaws.com"
-      }
+      Principal = { Service = "ec2.amazonaws.com" }
     }]
   })
 }
 
 resource "aws_iam_policy" "ec2_s3_policy" {
-  name        = "ec2-full-s3-policy"
+  name        = "ec2-s3-policy"
   description = "Full access to specific S3 bucket for EC2"
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
-        Effect   = "Allow"
-        Action   = "s3:*"
-        Resource = [
-          "arn:aws:s3:::${var.bucket_name}",
-          "arn:aws:s3:::${var.bucket_name}/*"
-        ]
-      }
-    ]
+    Statement = [{
+      Effect   = "Allow"
+      Action   = "s3:*"
+      Resource = [
+        "arn:aws:s3:::${var.bucket_name}",
+        "arn:aws:s3:::${var.bucket_name}/*"
+      ]
+    }]
   })
 }
 
@@ -222,41 +317,39 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 }
 
 # -----------------------
-# EC2 Instance (Public + SSH + S3 Access)
+# EC2 Instance
 # -----------------------
 resource "aws_instance" "web_server" {
   ami                    = data.aws_ami.amazon_linux.id
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.web_sg.id]
-  key_name               = aws_key_pair.grocerymate_key.key_name
+  key_name               = aws_key_pair.ec2_key.key_name
   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
 
-  tags = { Name = "grocerymate-ec2" }
+  tags = {
+    Name = var.ec2_name
+  }
 }
 
 # -----------------------
-# RDS Subnet Group (PRIVATE)
+# RDS Subnet Group
 # -----------------------
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  name = "rds-private-subnet-group"
-
-  subnet_ids = [
-    aws_subnet.private_subnet_1.id,
-    aws_subnet.private_subnet_2.id
-  ]
+ name = "rds-private-subnet-group"
+  subnet_ids = [aws_subnet.private_subnet_1.id, aws_subnet.private_subnet_2.id]
 }
 
 # -----------------------
-# RDS PostgreSQL (PRIVATE + PASSWORD)
+# RDS PostgreSQL
 # -----------------------
 resource "aws_db_instance" "postgres" {
-  identifier             = "grocerymate-db"
+  identifier             = var.db_identifier
   allocated_storage      = 20
   engine                 = "postgres"
   instance_class         = "db.t3.micro"
-  db_name                = "grocerydb"
-  username               = "groceryuser"
+  db_name                = var.db_name
+  username               = var.db_username
   password               = var.db_password
   publicly_accessible    = false
   skip_final_snapshot    = true
