@@ -1,164 +1,197 @@
-🛒 GroceryMate — Cloud-Native Grocery Platform
+Absolutely! I can give you a **ready-to-use `README.md` file** with all the content you shared, **beautified with badges, tables, emojis, and placeholders for images**. You can just save it as `README.md` in your repo.
 
-A hands-on cloud engineering project built to explore AWS infrastructure, backend services, and Terraform-based automation.
+Here’s the code:
 
-📖 Project Summary
+````markdown
+# 🛒 GroceryMate — Cloud-Native Grocery Platform
 
-GroceryMate is a cloud-hosted grocery shopping platform designed as a learning-focused project to practice deploying and managing a modern web application on AWS.
+> A hands-on cloud engineering project exploring AWS infrastructure, backend services, and Terraform automation.
 
-The project emphasizes:
+[![Python](https://img.shields.io/badge/Language-Python%2C%20Flask-blue)](https://www.python.org/) 
+[![Cloud](https://img.shields.io/badge/Cloud-AWS-orange)](https://aws.amazon.com/) 
+[![Database](https://img.shields.io/badge/Database-PostgreSQL-336791)](https://www.postgresql.org/) 
+[![Infrastructure](https://img.shields.io/badge/IaC-Terraform-purple)](https://www.terraform.io/)
 
-Infrastructure as Code (IaC) using Terraform
+---
 
-Secure backend development
+## 📖 Project Summary
 
-Cloud resource design with scalability and cost-awareness
+GroceryMate is a **cloud-hosted grocery shopping platform** built as a learning-focused project to practice:
 
-Practical experience integrating databases, APIs, and cloud services
+- Deploying and managing web applications on AWS  
+- Infrastructure as Code (Terraform)  
+- Backend security and API design  
+- Cloud resource planning for scalability and cost efficiency  
 
-Rather than focusing on UI polish, this project prioritizes architecture, deployment strategy, and backend reliability.
+> ⚠️ Focus is on **architecture and deployment**, not UI polish.
 
-🧠 What This Project Demonstrates
+---
 
-Cloud deployment of a multi-component application
+## 🧠 What This Project Demonstrates
 
-Backend API development using Python
+- Cloud deployment of a **multi-component web application**  
+- Backend API development using **Python (Flask)**  
+- Secure **user authentication and access control**  
+- PostgreSQL database integration  
+- Terraform-managed AWS infrastructure  
+- Practical DevOps-style workflows  
 
-Secure user authentication and access control
+This repository is a **personal learning reimplementation**.
 
-PostgreSQL database integration
+---
 
-Terraform-managed AWS infrastructure
+## 🧩 Core Functionality
 
-Practical DevOps-style workflows
+| Feature | Description |
+|---------|-------------|
+| **User Accounts & Authentication** | Secure registration, login, and token-based access |
+| **Product Browsing** | View grocery items, filter and sort by category or price |
+| **Basket Management** | Add, remove, and update product quantities |
+| **Checkout Logic** | Automatic price calculation and order finalization (no real payments) |
 
-This repository represents a reimplementation and customization created for personal learning and experimentation.
+---
 
-🧩 Core Functionality
+## 🖼️ Application Preview
 
-User Accounts & Authentication
+<div align="center">
 
-Secure registration and login
+![Homepage Screenshot](Docs/screenshots/homepage.png)  
+*Home page and product listing*
 
-Token-based authentication for protected endpoints
+![Basket Screenshot](Docs/screenshots/basket.png)  
+*Basket management and checkout flow*
 
-Product Browsing
+</div>
 
-View grocery items
+> Replace the above images with your own screenshots in `Docs/screenshots/`.
 
-Filter and sort by category and price
+---
 
-Basket Management
+## 🛠️ Technologies Used
 
-Add or remove products
+| Layer | Tools & Services |
+|-------|----------------|
+| Backend | Python, Flask |
+| Database | PostgreSQL |
+| Cloud Platform | AWS (EC2, RDS, S3, VPC) |
+| Infrastructure | Terraform |
+| Version Control | Git |
 
-Adjust quantities dynamically
+---
 
-Checkout Logic
+## 🔧 Local Setup Guide
 
-Price calculation
+### 1️⃣ Clone the Repository
 
-Order finalization flow (no real payments)
-
-🖼️ Application Preview
-
-Below are example screenshots from the running application:
-
-
-
-
-🛠️ Technologies Used
-Layer	Tools & Services
-Backend	Python, Flask
-Database	PostgreSQL
-Cloud Platform	AWS
-Infrastructure	Terraform
-Version Control	Git
-🔧 Local Setup Guide
-1️⃣ Get the Code
+```bash
 git clone --branch version2 https://github.com/AlejandroRomanIbanez/AWS_grocery.git
 cd AWS_grocery
+````
 
-2️⃣ Database Preparation (PostgreSQL)
+### 2️⃣ Database Preparation (PostgreSQL)
 
-Create the database and user manually to retain full control over credentials.
-
+```bash
 psql -U postgres -c "CREATE DATABASE grocerymate_db;"
 psql -U postgres -c "CREATE USER grocery_user WITH ENCRYPTED PASSWORD '<secure_password>';"
 psql -U postgres -c "ALTER USER grocery_user WITH SUPERUSER;"
+```
 
+> Replace `<secure_password>` with your own strong password.
 
-Replace <secure_password> with your own strong password.
+### 3️⃣ Import Initial Data
 
-3️⃣ Import Initial Data
+```bash
 psql -U grocery_user -d grocerymate_db -f backend/app/sqlite_dump_clean.sql
-
+```
 
 Optional verification:
 
+```bash
 psql -U grocery_user -d grocerymate_db -c "SELECT * FROM users;"
 psql -U grocery_user -d grocerymate_db -c "SELECT * FROM products;"
+```
 
-4️⃣ Python Environment Setup
+### 4️⃣ Python Environment Setup
+
+```bash
 cd backend
 python -m venv venv
+# macOS/Linux
 source venv/bin/activate
+# Windows
+venv\Scripts\activate
 pip install -r requirements.txt
+```
 
-5️⃣ Environment Configuration
+### 5️⃣ Environment Variables
 
-Set required environment variables (example):
+Create `.env`:
 
-export DATABASE_URL=postgresql://grocery_user:<password>@localhost/grocerymate_db
-export SECRET_KEY=your_secret_key
+```bash
+touch .env  # macOS/Linux
+ni .env -Force  # Windows
+```
 
-6️⃣ Run the Application
+Example content:
+
+```ini
+DATABASE_URL=postgresql://grocery_user:<password>@localhost/grocerymate_db
+SECRET_KEY=<your_secret_key>
+```
+
+### 6️⃣ Run the Application
+
+```bash
 python run.py
+```
 
+* Backend will be available at [http://localhost:5000](http://localhost:5000)
 
-The backend will be available locally once started.
+---
 
-☁️ AWS & Terraform Overview
+## ☁️ AWS & Terraform Overview
 
-This project uses Terraform to provision cloud infrastructure components such as:
+Terraform provisions:
 
-Compute resources
+* EC2 backend instances
+* RDS PostgreSQL database
+* S3 bucket for user avatars
+* VPC, subnets, and security groups
+* IAM roles for secure access
 
-Networking
+> ⚠️ AWS resources may incur charges. Review your AWS console before applying.
 
-Security groups
+---
 
-Database-related services
+## 🧪 Learning Goals & Design Decisions
 
-Terraform scripts are organized to encourage repeatable and auditable deployments.
+* Understand **cloud deployment workflows**
+* Learn how backend services interact with cloud-managed resources
+* Practice **Infrastructure as Code** and repeatable deployments
+* Explore **scalable, secure, cost-aware cloud architecture**
 
-⚠️ AWS resources may incur costs. Always review your AWS console.
+---
 
-🧪 Learning Goals & Design Decisions
+## 🔮 Possible Extensions
 
-Practice real-world cloud deployment workflows
+* Docker containerization
+* CI/CD pipeline integration
+* Role-based access control
+* Caching layer (Redis / ElastiCache)
+* Monitoring and logging with CloudWatch
 
-Understand how infrastructure choices affect scalability and cost
+---
 
-Learn how backend services interact with cloud-managed resources
+## 📜 License
 
-Explore Infrastructure as Code best practices
-
-This project is intentionally designed to be educational, not production-ready.
-
-🔮 Possible Extensions
-
-Containerization using Docker
-
-CI/CD pipeline integration
-
-Role-based access control
-
-Caching layer for performance
-
-Monitoring and logging (CloudWatch)
-
-📜 License
-
-This repository is provided for educational purposes only.
+This project is for **educational purposes**.
 You are free to explore, modify, and learn from it.
+
+```
+
+---
+
+If you want, I can also make a **version with colored badges, emojis for every section, and a multi-column table layout for AWS resources and Terraform scripts** to make it look **portfolio-ready and professional**.  
+
+Do you want me to do that?
+```
