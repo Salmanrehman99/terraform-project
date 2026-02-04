@@ -63,6 +63,11 @@ variable "key_pair_name" {
   type        = string
 }
 
+variable "email_address" {
+  description = "Email addresses to receive CloudWatch alerts"
+  type        = list(string)
+}
+
 variable "public_key_path" {
   description = "Path to your EC2 public key file"
   type        = string
@@ -215,17 +220,25 @@ resource "aws_security_group" "web_sg" {
   name   = "web-sg"
   vpc_id = aws_vpc.main_vpc.id
 
-  # SSH Access: Restricted ONLY to your current IP
+
   ingress {
     description = "SSH from my current IP"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-
     cidr_blocks = ["${chomp(data.http.my_ip.response_body)}/32"]
   }
 
 
+  ingress {
+    description = "Flask App Port"
+    from_port   = 5000
+    to_port     = 5000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # HTTP Access
   ingress {
     from_port   = 80
     to_port     = 80
@@ -247,7 +260,6 @@ resource "aws_security_group" "rds_sg" {
   name   = "rds-sg"
   vpc_id = aws_vpc.main_vpc.id
 
-
   ingress {
     from_port       = 5432
     to_port         = 5432
@@ -264,7 +276,6 @@ resource "aws_security_group" "rds_sg" {
 
   tags = { Name = "rds-sg" }
 }
-
 # -----------------------
 # EC2 Key Pair
 # -----------------------
@@ -326,6 +337,8 @@ resource "aws_instance" "web_server" {
   vpc_security_group_ids = [aws_security_group.web_sg.id]
   key_name               = aws_key_pair.ec2_key.key_name
   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
+  
+  monitoring = true
 
   tags = {
     Name = var.ec2_name
@@ -356,3 +369,48 @@ resource "aws_db_instance" "postgres" {
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
 }
+
+
+# -----------------------
+# SNS Topic for EC2 CPU Alerts
+# -----------------------
+resource "aws_sns_topic" "ec2_cpu_alerts" {
+  name = "ec2-cpu-utilization-alerts"
+}
+
+# -----------------------
+# SNS Email Subscription
+# -----------------------
+resource "aws_sns_topic_subscription" "ec2_cpu_email" {
+  count     = length(var.email_address)
+  topic_arn = aws_sns_topic.ec2_cpu_alerts.arn
+  protocol  = "email"
+  endpoint  = var.email_address[count.index]
+}
+
+# -----------------------
+# CloudWatch Alarm for EC2 CPU Utilization
+# -----------------------
+resource "aws_cloudwatch_metric_alarm" "ec2_cpu_high" {
+  alarm_name          = "ec2-cpu-high-${aws_instance.web_server.id}"
+  alarm_description   = "Alarm when EC2 CPU exceeds 80%"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  threshold           = 80
+
+  evaluation_periods = 2
+  period             = 60
+  statistic           = "Average"
+
+  metric_name = "CPUUtilization"
+  namespace   = "AWS/EC2"
+
+  alarm_actions = [aws_sns_topic.ec2_cpu_alerts.arn]
+
+  treat_missing_data        = "notBreaching"
+  insufficient_data_actions = []
+
+  dimensions = {
+    InstanceId = aws_instance.web_server.id
+  }
+}
+
