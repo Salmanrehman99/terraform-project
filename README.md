@@ -88,24 +88,10 @@ This is the complete, final version. I have meticulously integrated every single
 To ensure 100% clickability, I have used lowercase anchors. Copy and paste everything from the block below.
 
 
-<!--
-<p align="center">
-  <img src="https://capsule-render.vercel.app/render?type=waving&color=0:FF9900,100:7B42BC&height=220&section=header&text=GROCERY%20MATE%20CLOUD&fontSize=50&animation=fadeIn&fontAlignY=35" width="100%" />
-</p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/AWS-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white" />
-  <img src="https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white" />
-  <img src="https://img.shields.io/badge/Amazon%20S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white" />
-  <img src="https://img.shields.io/badge/CloudWatch-C925D1?style=for-the-badge&logo=amazon-cloudwatch&logoColor=white" />
-  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
-</p>
--->
+
 
 <a id="vision"></a>
-
-
-
 ## 🚀 The Vision
 **GroceryMate** is a high-performance, cloud-native e-commerce solution engineered for scalability and reliability. By leveraging **Infrastructure as Code (IaC)**, I've built a platform that isn't just an app—it's a fully automated ecosystem.
 
@@ -113,16 +99,6 @@ To ensure 100% clickability, I have used lowercase anchors. Copy and paste every
 
 ---
 
-## 🧭 Mission Control
-*Click any badge to jump directly to that section.*
-
-| 🌐 STRATEGY | 🏗️ ARCHITECTURE | 🛠️ IMPLEMENTATION |
-| :---: | :---: | :---: |
-| [![Overview](https://img.shields.io/badge/PROJECT-GENESIS-blue?style=for-the-badge&logo=target)](#overview) | [![Design](https://img.shields.io/badge/SYSTEM-DESIGN-orange?style=for-the-badge&logo=blueprint)](#system-design) | [![Prereq](https://img.shields.io/badge/PRE-REQUISITES-red?style=for-the-badge&logo=lists)](#prerequisites) |
-| [![Features](https://img.shields.io/badge/CORE-CAPABILITIES-purple?style=for-the-badge&logo=starship)](#features) | [![Gallery](https://img.shields.io/badge/APP-PREVIEW-yellow?style=for-the-badge&logo=camera)](#screenshots) | [![Install](https://img.shields.io/badge/DEPLOYMENT-FLOW-brightgreen?style=for-the-badge&logo=rocket)](#installation) |
-| [![Usage](https://img.shields.io/badge/USER-MANUAL-blueviolet?style=for-the-badge&logo=bookstack)](#usage) | [![Roadmap](https://img.shields.io/badge/FUTURE-ROADMAP-lightgrey?style=for-the-badge&logo=road)](#improvements) | [![License](https://img.shields.io/badge/LEGAL-LICENSE-black?style=for-the-badge&logo=balance-scale)](#license) |
-
----
 
 <a id="overview"></a>
 ## 🚀 Project Genesis (Overview)
