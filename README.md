@@ -88,22 +88,31 @@ Before creating the database user, you can choose a custom username and password
 Create database and user:
 
 ```sh
-psql -U postgres -c "CREATE DATABASE grocerymate_db;"
-psql -U postgres -c "CREATE USER grocery_user WITH ENCRYPTED PASSWORD '<your_secure_password>';"  # Replace <your_secure_password> with a strong password of your choice
-psql -U postgres -c "ALTER USER grocery_user WITH SUPERUSER;"
+# Create a PostgreSQL database
+psql -U <postgres_admin_user> -c "CREATE DATABASE <your_database_name>;"
+
+# Create a new PostgreSQL user with a secure password
+psql -U <postgres_admin_user> -c "CREATE USER <your_database_user> WITH ENCRYPTED PASSWORD '<your_secure_password>';"
+
+# Grant superuser privileges (optional, adjust based on security requirements)
+psql -U <postgres_admin_user> -c "ALTER USER <your_database_user> WITH SUPERUSER;"
+
 ```
 
 ### 🔹 Populate Database
 
 ```sh
-psql -U grocery_user -d grocerymate_db -f backend/app/sqlite_dump_clean.sql
+psql -U <your_database_user> -d <your_database_name> -f <path_to_sql_file>
 ```
 
 Verify insertion:
 
 ```sh
-psql -U grocery_user -d grocerymate_db -c "SELECT * FROM users;"
-psql -U grocery_user -d grocerymate_db -c "SELECT * FROM products;"
+# Verify data in users table
+psql -U <your_database_user> -d <your_database_name> -c "SELECT * FROM users;"
+
+# Verify data in products table
+psql -U <your_database_user> -d <your_database_name> -c "SELECT * FROM products;"
 ```
 
 ### 🔹 Set Up Python Environment
@@ -144,12 +153,46 @@ nano .env
 Fill in the following information (make sure to replace the placeholders):
 
 ```ini
-JWT_SECRET_KEY=<your_generated_key>
-POSTGRES_USER=grocery_user
-POSTGRES_PASSWORD=<your_password>
-POSTGRES_DB=grocerymate_db
-POSTGRES_HOST=localhost
+# ------------------------
+# Authentication
+# ------------------------
+JWT_SECRET_KEY=<your_jwt_secret_key>
+
+# ------------------------
+# PostgreSQL Database
+# ------------------------
+POSTGRES_USER=<your_postgres_username>
+POSTGRES_PASSWORD=<your_postgres_password>
+POSTGRES_DB=<your_postgres_database_name>
+POSTGRES_HOST=<your_postgres_host>
 POSTGRES_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
+
+# ------------------------
+# AWS Configuration
+# ------------------------
+AWS_REGION=<aws_region>
+AWS_ACCESS_KEY_ID=<aws_access_key_id>
+AWS_SECRET_ACCESS_KEY=<aws_secret_access_key>
+
+# ------------------------
+# S3 Bucket for User Files
+# ------------------------
+S3_BUCKET_NAME=<s3_bucket_name>
+S3_BUCKET_REGION=<s3_bucket_region>
+S3_AVATAR_PREFIX=<s3_avatar_prefix>
+
+# ------------------------
+# EC2 Key Pair
+# ------------------------
+EC2_KEY_NAME=<ec2_key_pair_name>
+PUBLIC_KEY_PATH=<path_to_public_key_file>
+
+# ------------------------
+# Optional: Flask Environment
+# ------------------------
+FLASK_ENV=<flask_environment>
+ENVIRONMENT=<environment_name>
+
 ```
 
 ### 🔹 Start the Application
@@ -187,7 +230,7 @@ This section explains exactly how to build, configure, and run the GroceryMate a
 | Web Framework          | Flask      | Latest (via `requirements.txt`) |
 | Database               | PostgreSQL | **14+** (Engine: `postgres`)    |
 | Frontend               | JavaScript | React-based                     |
-| Cloud Provider         | AWS        | us-east-1                       |
+| Cloud Provider         | AWS        | aws_region                       |
 | Infrastructure as Code | Terraform  | **≥ 1.5**                       |
 | Storage                | Amazon S3  | Standard + Versioning           |
 | Authentication         | JWT        | HS256                           |
@@ -200,7 +243,7 @@ ENVIRONMENT=dev
 JWT_SECRET_KEY=your_generated_secret
 
 # AWS
-AWS_REGION=us-east-1
+AWS_REGION=aws_region
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 
@@ -212,7 +255,7 @@ S3_AVATAR_PREFIX=avatars/
 # Database
 POSTGRES_USER=grocery_user
 POSTGRES_PASSWORD=your_password
-POSTGRES_DB=grocerymate_db
+POSTGRES_DB=your_postgres_database_name
 POSTGRES_HOST=localhost
 POSTGRES_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}
 
@@ -262,8 +305,6 @@ The following diagram illustrates the high-level architecture of the GroceryMate
 Add CI/CD pipeline (GitHub Actions)
 
 Containerize the application using Docker
-
-Implement CloudWatch monitoring
 
 Improve IAM security policies
 
