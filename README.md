@@ -85,7 +85,11 @@ This is the complete, final version. I have meticulously integrated every single
 
 To ensure 100% clickability, I have used lowercase anchors. Copy and paste everything from the block below.
 
-<!--
+<!-- Hidden graphics preload section -->
+
+<details>
+<summary></summary>
+
 <p align="center">
   <img src="https://capsule-render.vercel.app/render?type=waving&color=0:FF9900,100:7B42BC&height=220&section=header&text=GROCERY%20MATE%20CLOUD&fontSize=50&animation=fadeIn&fontAlignY=35" width="100%" />
 </p>
@@ -97,7 +101,9 @@ To ensure 100% clickability, I have used lowercase anchors. Copy and paste every
   <img src="https://img.shields.io/badge/CloudWatch-C925D1?style=for-the-badge&logo=amazon-cloudwatch&logoColor=white" />
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
 </p>
--->
+
+</details>
+
 
 <a id="vision"></a>
 ## 🚀 The Vision
