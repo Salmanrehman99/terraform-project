@@ -52,16 +52,18 @@ This project includes Terraform-managed infrastructure for AWS:
 
 #### 📋 Technology Stack
 
-| Component              | Technology | Version / Engine                |
-| ---------------------- | ---------- | ------------------------------- |
-| Backend                | Python     | **3.11+**                       |
-| Web Framework          | Flask      | Latest (via `requirements.txt`) |
-| Database               | PostgreSQL | **14+** (Engine: `postgres`)    |
-| Frontend               | JavaScript | React-based                     |
-| Cloud Provider         | AWS        | Configurable Region             |
-| Infrastructure as Code | Terraform  | **≥ 1.5**                       |
-| Storage                | Amazon S3  | Standard + Versioning           |
-| Authentication         | JWT        | HS256                           |
+| Component              | Technology       | Version / Engine                     |
+| ---------------------- | ---------------- | -----------------------------------  |
+| Backend                | Python           | **3.11+**                            |
+| Web Framework          | Flask            | Latest (via `requirements.txt`)      |
+| Database               | PostgreSQL       | **14+** (Engine: `postgres`)         |
+| Frontend               | JavaScript       | React-based                          |
+| Cloud Provider         | AWS              | Configurable Region                  |
+| Infrastructure as Code | Terraform        | **≥ 1.5**                            |
+| Storage                | Amazon S3        | Standard + Versioning                |
+| Monitoring & Alerts    | CloudWatch + SNS | AWS Managed / CPU, Metrics, Alarms   |
+| Authentication         | JWT              | HS256                                |
+
 
 
 #### 🐳 Docker (Planned)
@@ -269,7 +271,6 @@ python3 run.py
 - **🔔 Real-time Notifications**: WebSocket integration for order updates and promotional alerts
 - **💳 Payment Gateway Integration**: Stripe, PayPal, and other payment providers
 - **📱 Mobile Application**: Native iOS and Android apps for enhanced user experience
-- **🤖 AI-Powered Recommendations**: Machine learning-based product suggestions
 - **🌐 Multi-region Deployment**: CDN integration and global infrastructure expansion
 - **🔍 Advanced Search**: Elasticsearch integration for faster, more accurate product searches
 - **📦 Order Tracking**: Real-time delivery tracking and status updates
