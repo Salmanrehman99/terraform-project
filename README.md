@@ -99,6 +99,7 @@ Terraform provisions:
 - IAM roles & policies
 - PostgreSQL RDS
 - Networking resources (VPC-related components)
+- CloudWatch monitoring with CPU alarms and SNS notifications
 
 #### 🏗 Architecture Diagram
 
@@ -107,7 +108,6 @@ The following diagram illustrates the high-level architecture of the GroceryMate
 ![GroceryMate Architecture](Docs/architecture.png)
 
 ---
-
 ## 📸 App Preview
 
 ![App Screenshot](https://github.com/user-attachments/assets/ea039195-67a2-4bf2-9613-2ee1e666231a)
