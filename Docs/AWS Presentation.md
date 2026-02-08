@@ -25,6 +25,8 @@ The application follows a secure **Three-Tier Architecture** deployed in the `eu
 | **Terraform** | IaC Tool | **Automation:** I used Terraform to define the infrastructure as code. This allows for repeatable, consistent deployments and prevents "configuration drift." |
 | **Amazon VPC** | Networking | **Security:** Isolates the application in a private virtual network. Security Groups act as firewalls, ensuring only traffic on Port 5000 (App) and 22 (SSH) is permitted. |
 | **Amazon S3** | Object Storage | **Assets:** Optimized for storing and serving static product images with 99.99% durability, reducing the storage load on the EC2 instance. |
+| **Amazon CloudWatch** | Monitoring | **Observability:** Monitors CPU Utilization. Triggers an alarm if usage is **≥ 80%**. |
+| **Amazon SNS** | Notification | **Alerts:** Sends email notifications when CloudWatch alarms are triggered. |
 
 ---
 
@@ -33,6 +35,8 @@ Designed to stay within the **AWS Free Tier** limits:
 * **EC2:** 750 hours/month of `t2.micro`.
 * **RDS:** 750 hours/month of `db.t2.micro`.
 * **EBS:** 8GB `gp3` storage (included in the 30GB free limit).
+* **S3:** 5GB of Standard Storage, 20,000 GET Requests, and 2,000 PUT Requests per month.
+* **CloudWatch:** 10 custom metrics and 5GB of log ingestion (Free Tier).
 
 ---
 
@@ -47,7 +51,8 @@ Designed to stay within the **AWS Free Tier** limits:
 ## 🔗 Project Links
 
 * **GitHub Repository:** [https://github.com/Salmanrehman99/terraform-project.git](https://github.com/Salmanrehman99/terraform-project.git)
-* **Live Demo:** [http://ec2-3-69-26-136.eu-central-1.compute.amazonaws.com:5000](http://ec2-3-69-26-136.eu-central-1.compute.amazonaws.com:5000)
+* **Live Demo:** http://ec2-<PUBLIC_IP_WITH_HYPHENS>.<REGION>.compute.amazonaws.com
+
 
 ---
 
