@@ -281,18 +281,21 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
 # -----------------------
 resource "aws_db_instance" "postgres" {
   identifier             = var.db_identifier
-  allocated_storage      = 20
-  engine                 = "postgres"
-  instance_class         = "db.t3.micro"
+  allocated_storage      = var.rds_allocated_storage
+  engine                 = var.rds_engine
+  instance_class         = var.rds_instance_class
+  storage_type           = var.rds_storage_type
+
   db_name                = var.db_name
   username               = var.db_username
   password               = var.db_password
+
   publicly_accessible    = false
   skip_final_snapshot    = true
+
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
 }
-
 
 # -----------------------
 # SNS Topic for EC2 CPU Alerts
