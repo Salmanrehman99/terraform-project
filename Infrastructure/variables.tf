@@ -75,3 +75,26 @@ variable "private_subnet_2_cidr" {
   type        = string
 }
 
+# -----------------------
+# RDS Variables
+# -----------------------
+variable "rds_allocated_storage" {
+  description = "Allocated storage for RDS instance (GB)"
+  type        = number
+}
+
+variable "rds_engine" {
+  description = "RDS database engine"
+  type        = string
+}
+
+variable "rds_instance_class" {
+  description = "RDS instance class"
+  type        = string
+}
+
+variable "rds_storage_type" {
+  description = "RDS storage type"
+  type        = string
+}
+
