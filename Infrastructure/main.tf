@@ -128,13 +128,6 @@ resource "aws_route_table_association" "private_assoc_2" {
   route_table_id = aws_route_table.private_rt.id
 }
 
-# -----------------------
-# Dynamic IP Discovery
-# -----------------------
-
-data "http" "my_ip" {
-  url = "https://checkip.amazonaws.com"
-}
 
 # -----------------------
 # Security Groups
@@ -145,11 +138,11 @@ resource "aws_security_group" "web_sg" {
 
 
   ingress {
-    description = "SSH from my current IP"
+    description = "SSH access from user-provided IPs only"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${chomp(data.http.my_ip.response_body)}/32"]
+    cidr_blocks = var.ssh_allowed_cidr
   }
 
 
