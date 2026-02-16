@@ -5,6 +5,11 @@ variable "db_identifier" {
   type        = string
 }
 
+variable "ec2_instance_type" {
+  description = "EC2 instance type"
+  type        = string
+}
+
 variable "db_name" {
   description = "PostgreSQL database name"
   type        = string
