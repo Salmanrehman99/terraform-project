@@ -38,17 +38,10 @@ data "aws_availability_zones" "available" {
 }
 
 # -----------------------
-# Fetch Latest Amazon Linux 2 AMI
+# EC2 AMI
 # -----------------------
-data "aws_ami" "amazon_linux" {
-  most_recent = true
-  owners      = ["amazon"]
+ami = var.ec2_ami_id
 
-  filter {
-    name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
-  }
-}
 
 # -----------------------
 # VPC & Networking
