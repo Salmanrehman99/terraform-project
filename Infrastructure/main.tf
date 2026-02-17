@@ -37,11 +37,6 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
-# -----------------------
-# EC2 AMI
-# -----------------------
-ami = var.ec2_ami_id
-
 
 # -----------------------
 # VPC & Networking
@@ -240,7 +235,7 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 # EC2 Instance
 # -----------------------
 resource "aws_instance" "web_server" {
-  ami                    = data.aws_ami.amazon_linux.id
+  ami                    = var.ec2_ami_id
   instance_type          = var.ec2_instance_type
   subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.web_sg.id]
