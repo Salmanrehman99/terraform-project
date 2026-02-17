@@ -75,6 +75,22 @@ Future Docker usage will include:
 - PostgreSQL service via Docker Compose
 - Consistent development environments
 
+## Architectural Strategy
+The goal of this deployment is to create a secure, automated environment for a web application using a Three-Tier Architecture. By leveraging a custom VPC, the infrastructure is split into public and private layers. This ensures that while the web server is reachable by users, the database remains completely isolated from the public internet, significantly reducing the attack surface.
+
+
+
+## Why These Services?
+* **EC2 (Elastic Compute Cloud):** This acts as the host for the Flask application. It was chosen for its flexibility; it allows us to define specific instance types and scale compute power based on the application's needs.
+* **RDS (Relational Database Service):** Instead of manually managing a database on a server, RDS provides a managed PostgreSQL instance. This handles the "heavy lifting" like automated backups and patching. It is tucked away in a private subnet group so only the EC2 instance can talk to it.
+* **S3 (Simple Storage Service):** Used for persistent object storage. Whether it's for storing user uploads or application logs, S3 offers virtually unlimited durability without needing to manage disk partitions.
+* **VPC & Subnets:** The VPC provides the network boundary. I’ve configured a Public Subnet for the web server (to allow ingress from the Internet Gateway) and Private Subnet for the database tier to ensure a clear security boundary between the application and the data.
+
+## Security & Monitoring Logic
+* **Security Groups:** These function as the primary firewall. The web-sg is configured to allow traffic on ports 80 (HTTP) and 5000 (Flask), while restricting SSH (22) to authorized IPs. The rds-sg is even stricter: it only accepts incoming traffic on port 5432 if it originates specifically from the web server’s security group.
+* **IAM Roles:** To avoid the security risk of hardcoding AWS keys, I used an IAM Instance Profile. This allows the EC2 instance to securely "assume" the permissions needed to read and write to the S3 bucket.
+* **CloudWatch & SNS:** For basic "ops" management, I included a CloudWatch alarm. If the EC2 instance hits 80% CPU utilization for more than two minutes, it triggers an SNS notification that sends an alert email to the addresses defined in the variables.
+
 #### 🏗 Terraform Infrastructure Commands
 
 All AWS infrastructure is managed using Terraform.
