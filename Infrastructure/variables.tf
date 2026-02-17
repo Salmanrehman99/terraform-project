@@ -10,6 +10,12 @@ variable "ec2_instance_type" {
   type        = string
 }
 
+variable "ec2_ami_id" {
+  description = "AMI ID for the EC2 instance. User must provide a free-tier eligible AMI."
+  type        = string
+  # No default, user must supply the AMI
+}
+
 variable "db_name" {
   description = "PostgreSQL database name"
   type        = string
